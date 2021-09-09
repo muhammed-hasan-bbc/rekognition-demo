@@ -9,7 +9,7 @@ function App() {
   const onImageChange = (event) => {
     if (event.target.files && event.target.files[0]) {
       let selectedImage = event.target.files[0]
-      setImage(URL.createObjectURL(event.target.files[0]));
+      setImage(URL.createObjectURL(selectedImage));
       processImage(selectedImage)
     }
   };
@@ -36,9 +36,7 @@ function App() {
     let reader = new FileReader();
     reader.onload = (function (theFile) {
       return function (e) {
-        let img = document.createElement("img");
         let image = null;
-        img.src = e.target.result;
         let jpg = true;
         try {
           image = window.atob(e.target.result.split("data:image/jpeg;base64,")[1]);
