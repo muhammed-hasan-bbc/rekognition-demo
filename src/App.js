@@ -2,9 +2,13 @@ import "./App.css";
 import { useState } from "react";
 import {rekognitionClient} from "./lib/rekognitionClient"
 import { DetectFacesCommand } from "@aws-sdk/client-rekognition";
+import ReactCrop from "react-image-crop";
+
+import 'react-image-crop/dist/ReactCrop.css';
 
 function App() {
   const [image, setImage] = useState();
+  const [cropProps, setCropProps] = useState();
 
   const onImageChange = (event) => {
     if (event.target.files && event.target.files[0]) {
@@ -13,6 +17,14 @@ function App() {
       processImage(selectedImage)
     }
   };
+
+  const getBoundingBox = (box) => ({
+    unit: '%',
+    x: box.Left * 100,
+    y: box.Top * 100,
+    width: box.Width * 100,
+    height: box.Height * 100
+  })
 
   const detectFaces = async (imageData) => {
     // Set the parameters.
@@ -25,6 +37,9 @@ function App() {
     try {
       const data = await rekognitionClient.send(new DetectFacesCommand(params));
       console.log(data)
+
+      setCropProps(getBoundingBox(data.FaceDetails[0].BoundingBox))
+
     } catch (err) {
       console.log("Error", err);
     }
@@ -70,8 +85,14 @@ function App() {
       <h1>Test rekognition faces application</h1>
 
       <div>
-        {image ? <> 
-          <img alt="User selection" id="target" src={image} /> 
+        {image ? <>
+          <ReactCrop
+            onChange={crop => {
+              setCropProps(crop)
+            }}
+            keepSelection={true}
+            src={image} 
+            crop={cropProps}/>
         </>: <></>}
 
       </div>
