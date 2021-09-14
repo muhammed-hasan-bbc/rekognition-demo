@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-
+import { getImageDarkness} from "../../util/darknessDetect"
 
 const FilterEditor = ({imageSrc}) => {
 
@@ -8,10 +8,22 @@ const FilterEditor = ({imageSrc}) => {
     const [brightness, setBrightness] = useState(100)
     const [contrast, setContrast] = useState(100)
 
+    const [message, setMessage] = useState("")
+
     useEffect(() => {
         let filterString = "brightness(" + brightness + "%) contrast(" + contrast + "%)";
         setFilterString(filterString)
     }, [brightness, contrast])
+
+    useEffect(() => {
+        getImageDarkness(imageSrc, (brightness) => {
+            if (brightness < 100) {
+                setMessage("Your image is quite dark, consider using the brightness slider or consider using another image")
+            } else {
+                setMessage()
+            }
+        })
+    }, [imageSrc])
 
     const renderControls = () => {
         if (imageSrc) {
@@ -43,6 +55,9 @@ const FilterEditor = ({imageSrc}) => {
                         setContrast(e.target.value)
                     }}></input>
                 <br />
+
+                {message ? <p>{message}</p> : <></>}
+
                 <button id="reset" onClick={e => {
                     e.preventDefault()
                     setBrightness(100)
