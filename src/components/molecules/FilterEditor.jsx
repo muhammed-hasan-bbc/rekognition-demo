@@ -3,15 +3,15 @@ import { useEffect, useState } from "react"
 
 const FilterEditor = ({imageSrc}) => {
 
-    const [brightness, setBrightness] = useState(0)
-    const [sharpness, setSharpness] = useState(0)
-    const [contrast, setContrast] = useState(0)
+    const [filterString, setFilterString] = useState("")
 
-    const getContrast = () => {
-        return contrast/100
-    }
+    const [brightness, setBrightness] = useState(100)
+    const [contrast, setContrast] = useState(100)
 
-
+    useEffect(() => {
+        let filterString = "brightness(" + brightness + "%) contrast(" + contrast + "%)";
+        setFilterString(filterString)
+    }, [brightness, contrast])
 
     const renderControls = () => {
         if (imageSrc) {
@@ -19,80 +19,43 @@ const FilterEditor = ({imageSrc}) => {
                 <label htmlFor="brightness">Brightness:</label>
                 <input 
                     type="range" 
-                    min="-100" max="100"
+                    min="0" max="200"
                     name="brightness" 
+                    step="1"
                     value={brightness} 
                     className="slider" 
                     id="brightness" 
                     onChange={e => {
                         setBrightness(e.target.value)
-                        window.Caman("#image", function(){
-                            this.reloadCanvasData();
-                            this.revert(false);
-                            this.brightness(e.target.value);
-                            this.sharpen(sharpness);
-                            this.contrast(getContrast());
-                            this.render()
-                        })
                     }}></input>
                 <br />
-                <label htmlFor="sharpness">Sharpness:</label>
-                <input 
-                    type="range" 
-                    min="-50" max="50"
-                    name="sharpness" 
-                    value={sharpness} 
-                    className="slider" 
-                    id="sharpness" 
-                    onChange={e => {
-                        setSharpness(e.target.value)
-                        window.Caman("#image", function(){
-                            this.reloadCanvasData();
-                            this.revert(false);
-                            this.brightness(brightness);
-                            this.sharpen(e.target.value);
-                            this.contrast(getContrast());
-                            this.render()
-                        })
-                    }}></input>
-                <br />
+
                 <label htmlFor="contrast">Contrast:</label>
                 <input 
                     type="range" 
-                    min="-5000" max="5000"
-                    step="500"
-                    name="contrast" 
+                    min="100" max="200"
+                    name="brightness" 
+                    step="1"
                     value={contrast} 
                     className="slider" 
-                    id="contrast" 
+                    id="brightness" 
                     onChange={e => {
                         setContrast(e.target.value)
-                        window.Caman("#image", function(){
-                            this.reloadCanvasData();
-                            this.revert(false);
-                            this.brightness(brightness);
-                            this.sharpen(sharpness);
-                            this.contrast((e.target.value)/100);
-                            this.render()
-                        })
                     }}></input>
                 <br />
-                <button onClick={e => {
-                    window.Caman("#image", function(){
-                        setBrightness(0)
-                        setSharpness(0)
-                        setContrast(0)
-                        this.reloadCanvasData();
-                        this.revert(false);
-                    })
-                    
-                }}>Reset</button>
+                <button id="reset" onClick={e => {
+                    e.preventDefault()
+                    setBrightness(100)
+                    setContrast(100)
+                }}>
+                    Reset
+                </button>
             </>
         }
     }
 
     return <div>
-            <img id="image" alt="" src={imageSrc}></img>
+            <img id="image" alt="" src={imageSrc} style={{filter: filterString}}></img>
             <br />
             {renderControls()}
         </div>
