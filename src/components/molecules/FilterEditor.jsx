@@ -7,17 +7,6 @@ const FilterEditor = ({imageSrc}) => {
     const [sharpness, setSharpness] = useState(0)
     const [contrast, setContrast] = useState(0)
 
-    useEffect(() => {
-        window.Caman("#image", function(){
-            this.reloadCanvasData();
-            this.revert(false);
-            this.brightness(brightness);
-            this.sharpen(sharpness);
-            this.render()
-        })
-
-    }, [brightness, sharpness, contrast])
-
     const getContrast = () => {
         return contrast/100
     }
