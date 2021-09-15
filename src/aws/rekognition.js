@@ -2,15 +2,18 @@ import {rekognitionClient} from "./rekognitionClient"
 import { DetectFacesCommand } from "@aws-sdk/client-rekognition";
 
 
-const getBoundingBox = (box) => ({
-    unit: '%',
-    x: box.Left * 100,
-    y: box.Top * 100,
-    width: box.Width * 100,
-    height: box.Height * 100
-  })
+const getBoundingBox = (box, imageDimensions) => {
+    debugger
+    return {
+        unit: 'px',
+        x: box.Left * imageDimensions.imageWidth,
+        y: box.Top * imageDimensions.imageHeight,
+        width: box.Width * imageDimensions.imageWidth,
+        height: box.Height * imageDimensions.imageHeight
+    }
+  }
 
-const detectFaces = async (imageData) => {
+const detectFaces = async (imageData, imageDimensions) => {
     // Set the parameters.
     let params = {
       Image: {
@@ -21,15 +24,14 @@ const detectFaces = async (imageData) => {
     try {
       const data = await rekognitionClient.send(new DetectFacesCommand(params));
       console.log(data)
-      return getBoundingBox(data.FaceDetails[0].BoundingBox)
+      return getBoundingBox(data.FaceDetails[0].BoundingBox, imageDimensions)
 
     } catch (err) {
       console.log("Error", err);
     }
   };
 
-  const processImage = async (image, setFaceLocation) => {
-  
+  const processImage = async (image, imageDimensions, setFaceLocation) => {
     // Load base64 encoded image.
     let reader = new FileReader();
     reader.onload = (function (theFile) {
@@ -57,7 +59,7 @@ const detectFaces = async (imageData) => {
           ua[i] = image.charCodeAt(i);
         }
         // Call Rekognition.
-        detectFaces(ua)
+        detectFaces(ua, imageDimensions)
         .then(faceLocation => setFaceLocation(faceLocation));
       };
     })(image);

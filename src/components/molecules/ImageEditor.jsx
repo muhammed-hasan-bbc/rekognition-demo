@@ -11,8 +11,19 @@ const ImageEditor = () => {
     const onImageChange = (event) => {
         if (event.target.files && event.target.files[0]) {
             let selectedImage = event.target.files[0]
-            setImage(URL.createObjectURL(selectedImage));
-            processImage(selectedImage, setCropProps)
+            let selectedImageUrlPath = URL.createObjectURL(selectedImage)
+            setImage(selectedImageUrlPath);
+
+            let imageObj = new Image()
+            imageObj.src = selectedImageUrlPath
+            imageObj.onload = () => {
+                let imageDimensions  = {
+                    imageHeight: imageObj.height,
+                    imageWidth: imageObj.width
+                }
+                processImage(selectedImage, imageDimensions, setCropProps)
+            }
+
         }
     };
 
@@ -36,7 +47,7 @@ const ImageEditor = () => {
 
     return <div>
         {image ? render() : <></>}
-        <FilterEditor imageSrc={image}/>
+        <FilterEditor imageSrc={image} cropProps={cropProps}/>
         <FileSelect onImageChange={onImageChange}/>
     </div>
 }

@@ -1,19 +1,23 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { getImageDarkness} from "../../util/darknessDetect"
 
-const FilterEditor = ({imageSrc}) => {
+const FilterEditor = ({imageSrc, cropProps}) => {
 
-    const [filterString, setFilterString] = useState("")
+    const [stylingFilterString, setStylingFilterString] = useState("")
 
     const [brightness, setBrightness] = useState(100)
     const [contrast, setContrast] = useState(100)
-
     const [message, setMessage] = useState("")
+
+    const previewRef = useRef(null)
+    const imageRef = useRef(null)
+
 
     useEffect(() => {
         let filterString = "brightness(" + brightness + "%) contrast(" + contrast + "%)";
-        setFilterString(filterString)
+        setStylingFilterString(filterString)
     }, [brightness, contrast])
+
 
     useEffect(() => {
         getImageDarkness(imageSrc, (brightness) => {
@@ -24,6 +28,33 @@ const FilterEditor = ({imageSrc}) => {
             }
         })
     }, [imageSrc])
+
+    useEffect(() => {
+        if (imageSrc && imageSrc.length && cropProps) {
+
+            const image = new Image()
+            image.src = imageSrc
+
+            image.onload = () => {
+                const cropCanvas = previewRef.current
+
+                const newCrop = cropProps
+
+                const scaleX = image.naturalWidth / image.width
+                const scaleY = image.naturalHeight / image.height
+                const ctx = cropCanvas.getContext('2d')
+            
+                const pixelRatio = window.devicePixelRatio
+            
+                cropCanvas.width = newCrop.width * pixelRatio
+                cropCanvas.height = newCrop.height * pixelRatio
+
+                ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
+                ctx.drawImage(image, newCrop.x * scaleX, newCrop.y * scaleY, newCrop.width * scaleX, newCrop.height * scaleY, 0, 0, newCrop.width,
+                newCrop.height)
+            }
+        }
+    })
 
     const renderControls = () => {
         if (imageSrc) {
@@ -65,14 +96,19 @@ const FilterEditor = ({imageSrc}) => {
                 }}>
                     Reset
                 </button>
+                <br />
             </>
         }
     }
 
     return <div>
-            <img id="image" alt="" src={imageSrc} style={{filter: filterString}}></img>
+            <canvas
+                style={{filter: stylingFilterString, width: Math.round(cropProps?.width ?? 0),height: Math.round(cropProps?.height ?? 0)}}
+                id="canvas" 
+                ref={previewRef}/>
             <br />
             {renderControls()}
+            {JSON.stringify(cropProps)}
         </div>
 
 }
