@@ -3,6 +3,7 @@ import ReactCrop from "react-image-crop"
 import {processImage} from '../../aws/rekognition'
 import FileSelect from "../atoms/FileSelect";
 import FilterEditor from "./FilterEditor";
+import "./ImageEditor.scss"
 
 const ImageEditor = () => {
     const [image, setImage] = useState();
@@ -33,7 +34,8 @@ const ImageEditor = () => {
     };
 
     const renderCrop = () => {
-        return <ReactCrop
+        return <div className="Original">
+            <ReactCrop
             ruleOfThirds={true}
             onChange={crop => {
                 setCropProps(crop)
@@ -42,18 +44,27 @@ const ImageEditor = () => {
             src={image} 
             crop={cropProps}
         />
+        </div>
+    }
+
+    const renderImageEditor = () => {
+        return <div className="Cropped">
+            <FilterEditor imageSrc={image} cropProps={cropProps} filename={filename} filetype={filetype}/>
+        </div>
     }
 
     const render = () => {
-        return <> 
+        return <div className="Images"> 
             {renderCrop()}
-        </>
+            {renderImageEditor()}
+        </div>
     }
 
     return <div>
         {image ? render() : <></>}
-        <FilterEditor imageSrc={image} cropProps={cropProps} filename={filename} filetype={filetype}/>
-        <FileSelect onImageChange={onImageChange}/>
+        <div style={{textAlign:"center"}}>
+            <FileSelect onImageChange={onImageChange}/>
+        </div>
     </div>
 }
 
