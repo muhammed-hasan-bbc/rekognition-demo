@@ -3,7 +3,6 @@ import { DetectFacesCommand } from "@aws-sdk/client-rekognition";
 
 
 const getBoundingBox = (box, imageDimensions) => {
-    debugger
     return {
         unit: 'px',
         x: box.Left * imageDimensions.imageWidth,

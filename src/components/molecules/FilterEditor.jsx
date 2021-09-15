@@ -16,6 +16,7 @@ const FilterEditor = ({imageSrc, cropProps}) => {
     useEffect(() => {
         let filterString = "brightness(" + brightness + "%) contrast(" + contrast + "%)";
         setStylingFilterString(filterString)
+
     }, [brightness, contrast])
 
 
@@ -49,12 +50,13 @@ const FilterEditor = ({imageSrc, cropProps}) => {
                 cropCanvas.width = newCrop.width * pixelRatio
                 cropCanvas.height = newCrop.height * pixelRatio
 
+                ctx.filter = stylingFilterString;
                 ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
                 ctx.drawImage(image, newCrop.x * scaleX, newCrop.y * scaleY, newCrop.width * scaleX, newCrop.height * scaleY, 0, 0, newCrop.width,
                 newCrop.height)
             }
         }
-    })
+    }, [cropProps, stylingFilterString, imageSrc])
 
     const renderControls = () => {
         if (imageSrc) {
@@ -97,18 +99,25 @@ const FilterEditor = ({imageSrc, cropProps}) => {
                     Reset
                 </button>
                 <br />
+                <a href="/" id="download" onClick={e => {
+                    let filename = prompt("Provide a file name")
+                    document.getElementById("download").download = filename + ".png";
+                    document.getElementById("download").href = document.getElementById("canvas").toDataURL("image/png");
+                }} download="image.png">
+                    Download
+                </a>
+                <br />
             </>
         }
     }
 
     return <div>
             <canvas
-                style={{filter: stylingFilterString, width: Math.round(cropProps?.width ?? 0),height: Math.round(cropProps?.height ?? 0)}}
+                style={{width: Math.round(cropProps?.width ?? 0),height: Math.round(cropProps?.height ?? 0)}}
                 id="canvas" 
                 ref={previewRef}/>
             <br />
             {renderControls()}
-            {JSON.stringify(cropProps)}
         </div>
 
 }
