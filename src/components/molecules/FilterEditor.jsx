@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import { getImageDarkness} from "../../util/darknessDetect"
 
-const FilterEditor = ({imageSrc, cropProps}) => {
+const FilterEditor = ({imageSrc, cropProps, filename, filetype}) => {
 
     const [stylingFilterString, setStylingFilterString] = useState("")
 
@@ -100,9 +100,8 @@ const FilterEditor = ({imageSrc, cropProps}) => {
                 </button>
                 <br />
                 <a href="/" id="download" onClick={e => {
-                    let filename = prompt("Provide a file name")
-                    document.getElementById("download").download = filename + ".png";
-                    document.getElementById("download").href = document.getElementById("canvas").toDataURL("image/png");
+                    document.getElementById("download").download = "Guiding-Hand-" + filename
+                    document.getElementById("download").href = document.getElementById("canvas").toDataURL(filetype);
                 }} download="image.png">
                     Download
                 </a>

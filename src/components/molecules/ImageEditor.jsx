@@ -6,6 +6,8 @@ import FilterEditor from "./FilterEditor";
 
 const ImageEditor = () => {
     const [image, setImage] = useState();
+    const [filename, setFilename] = useState();
+    const [filetype, setFiletype] = useState();
     const [cropProps, setCropProps] = useState();
 
     const onImageChange = (event) => {
@@ -13,6 +15,8 @@ const ImageEditor = () => {
             let selectedImage = event.target.files[0]
             let selectedImageUrlPath = URL.createObjectURL(selectedImage)
             setImage(selectedImageUrlPath);
+            setFilename(selectedImage.name);
+            setFiletype(selectedImage.type);
 
             let imageObj = new Image()
             imageObj.src = selectedImageUrlPath
@@ -21,6 +25,7 @@ const ImageEditor = () => {
                     imageHeight: imageObj.height,
                     imageWidth: imageObj.width
                 }
+                
                 processImage(selectedImage, imageDimensions, setCropProps)
             }
 
@@ -47,7 +52,7 @@ const ImageEditor = () => {
 
     return <div>
         {image ? render() : <></>}
-        <FilterEditor imageSrc={image} cropProps={cropProps}/>
+        <FilterEditor imageSrc={image} cropProps={cropProps} filename={filename} filetype={filetype}/>
         <FileSelect onImageChange={onImageChange}/>
     </div>
 }
