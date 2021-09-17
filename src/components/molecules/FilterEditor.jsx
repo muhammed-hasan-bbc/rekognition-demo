@@ -29,7 +29,7 @@ const FilterEditor = ({imageDom, cropProps, filename, filetype}) => {
                 }
             })
         }
-    }, [imageDom, imageDom.width, imageDom.height])
+    }, [imageDom])
 
     useEffect(() => {
         if (imageDom && cropProps) {
