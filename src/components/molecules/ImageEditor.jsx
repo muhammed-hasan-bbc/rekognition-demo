@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import ReactCrop from "react-image-crop"
 import {processImage} from '../../aws/rekognition'
 import FileSelect from "../atoms/FileSelect";
@@ -6,7 +6,8 @@ import FilterEditor from "./FilterEditor";
 import "./ImageEditor.scss"
 
 const ImageEditor = () => {
-    const [image, setImage] = useState();
+    const [imageSrc, setImageSrc] = useState();
+    const [imageDom, setImageDom] = useState();
     const [filename, setFilename] = useState();
     const [filetype, setFiletype] = useState();
     const [cropProps, setCropProps] = useState();
@@ -15,41 +16,46 @@ const ImageEditor = () => {
         if (event.target.files && event.target.files[0]) {
             let selectedImage = event.target.files[0]
             let selectedImageUrlPath = URL.createObjectURL(selectedImage)
-            setImage(selectedImageUrlPath);
+            setImageSrc(selectedImageUrlPath);
             setFilename(selectedImage.name);
             setFiletype(selectedImage.type);
-
-            let imageObj = new Image()
-            imageObj.src = selectedImageUrlPath
-            imageObj.onload = () => {
-                let imageDimensions  = {
-                    imageHeight: imageObj.height,
-                    imageWidth: imageObj.width
-                }
-                
-                processImage(selectedImage, imageDimensions, setCropProps)
-            }
-
         }
     };
 
+    useEffect(() => {
+        let image = document.getElementsByClassName("ReactCrop__image")[0]
+        
+        if (image) {
+
+            setImageDom(image)
+
+            fetch(image.src).then(res => res.blob()).then(blob => {
+                processImage(blob, image, setCropProps)
+            })
+        }
+    }, [imageSrc])
+
     const renderCrop = () => {
-        return <div className="Original">
+        return <div className="Original" style={{width: "40vw", height: "20vh"}}>
             <ReactCrop
-            ruleOfThirds={true}
-            onChange={crop => {
-                setCropProps(crop)
-            }}
-            keepSelection={true}
-            src={image} 
-            crop={cropProps}
+                ruleOfThirds={true}
+                onChange={crop => {
+                    setCropProps(crop)
+                }}
+                keepSelection={true}
+                src={imageSrc} 
+                crop={cropProps}
         />
         </div>
     }
 
     const renderImageEditor = () => {
         return <div className="Cropped">
-            <FilterEditor imageSrc={image} cropProps={cropProps} filename={filename} filetype={filetype}/>
+            <FilterEditor 
+                imageDom={imageDom} 
+                cropProps={cropProps} 
+                filename={filename} 
+                filetype={filetype}/>
         </div>
     }
 
@@ -61,7 +67,7 @@ const ImageEditor = () => {
     }
 
     return <div>
-        {image ? render() : <></>}
+        {imageSrc ? render() : <></>}
         <div style={{textAlign:"center"}}>
             <FileSelect onImageChange={onImageChange}/>
         </div>

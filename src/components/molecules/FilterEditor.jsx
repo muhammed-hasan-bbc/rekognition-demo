@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import { getImageDarkness} from "../../util/darknessDetect"
 
-const FilterEditor = ({imageSrc, cropProps, filename, filetype}) => {
+const FilterEditor = ({imageDom, cropProps, filename, filetype}) => {
 
     const [stylingFilterString, setStylingFilterString] = useState("")
 
@@ -10,7 +10,6 @@ const FilterEditor = ({imageSrc, cropProps, filename, filetype}) => {
     const [message, setMessage] = useState("")
 
     const previewRef = useRef(null)
-    const imageRef = useRef(null)
 
 
     useEffect(() => {
@@ -21,45 +20,42 @@ const FilterEditor = ({imageSrc, cropProps, filename, filetype}) => {
 
 
     useEffect(() => {
-        getImageDarkness(imageSrc, (brightness) => {
-            if (brightness < 100) {
-                setMessage("Your image is quite dark, consider using the brightness slider or consider using another image")
-            } else {
-                setMessage()
-            }
-        })
-    }, [imageSrc])
+        if (imageDom && imageDom.width && imageDom.height) {
+            getImageDarkness(imageDom, (brightness) => {
+                if (brightness < 100) {
+                    setMessage("Your image is quite dark, consider using the brightness slider or consider using another image")
+                } else {
+                    setMessage()
+                }
+            })
+        }
+    }, [imageDom, imageDom.width, imageDom.height])
 
     useEffect(() => {
-        if (imageSrc && imageSrc.length && cropProps) {
+        if (imageDom && cropProps) {
 
-            const image = new Image()
-            image.src = imageSrc
+            const cropCanvas = previewRef.current
 
-            image.onload = () => {
-                const cropCanvas = previewRef.current
+            const newCrop = cropProps
 
-                const newCrop = cropProps
+            const scaleX = imageDom.naturalWidth / imageDom.width
+            const scaleY = imageDom.naturalHeight / imageDom.height
+            const ctx = cropCanvas.getContext('2d')
+        
+            const pixelRatio = window.devicePixelRatio
+        
+            cropCanvas.width = newCrop.width * pixelRatio
+            cropCanvas.height = newCrop.height * pixelRatio
 
-                const scaleX = image.naturalWidth / image.width
-                const scaleY = image.naturalHeight / image.height
-                const ctx = cropCanvas.getContext('2d')
-            
-                const pixelRatio = window.devicePixelRatio
-            
-                cropCanvas.width = newCrop.width * pixelRatio
-                cropCanvas.height = newCrop.height * pixelRatio
-
-                ctx.filter = stylingFilterString;
-                ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
-                ctx.drawImage(image, newCrop.x * scaleX, newCrop.y * scaleY, newCrop.width * scaleX, newCrop.height * scaleY, 0, 0, newCrop.width,
-                newCrop.height)
-            }
+            ctx.filter = stylingFilterString;
+            ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
+            ctx.drawImage(imageDom, newCrop.x * scaleX, newCrop.y * scaleY, newCrop.width * scaleX, newCrop.height * scaleY, 0, 0, newCrop.width,
+            newCrop.height)
         }
-    }, [cropProps, stylingFilterString, imageSrc])
+    }, [cropProps, stylingFilterString, imageDom])
 
     const renderControls = () => {
-        if (imageSrc) {
+        if (imageDom) {
             return <>
                 <label htmlFor="brightness">Brightness:</label>
                 <input 
