@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import ReactCrop from "react-image-crop"
 import {processImage} from '../../aws/rekognition'
 import FileSelect from "../atoms/FileSelect";
-import FilterEditor from "../molecules/FilterEditor";
+import CroppedEditor from "../molecules/CroppedEditor/CroppedEditor";
 import "./ImageEditor.scss"
 
 const ImageEditor = () => {
@@ -50,13 +50,16 @@ const ImageEditor = () => {
     }
 
     const renderImageEditor = () => {
-        return <div className="Cropped">
-            <FilterEditor 
-                imageDom={imageDom} 
-                cropProps={cropProps} 
-                filename={filename} 
-                filetype={filetype}/>
-        </div>
+        if (imageDom && cropProps && cropProps.height && cropProps.width) {
+            return <div className="Cropped">
+                <CroppedEditor 
+                    imageDom={imageDom} 
+                    cropProps={cropProps} 
+                    filename={filename} 
+                    filetype={filetype}/>
+            </div>
+
+        }
     }
 
     const render = () => {
