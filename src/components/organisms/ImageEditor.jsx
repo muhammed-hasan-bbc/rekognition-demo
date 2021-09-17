@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import ReactCrop from "react-image-crop"
 import {processImage} from '../../aws/rekognition'
 import FileSelect from "../atoms/FileSelect";
-import FilterEditor from "./FilterEditor";
+import FilterEditor from "../molecules/FilterEditor";
 import "./ImageEditor.scss"
 
 const ImageEditor = () => {
@@ -29,8 +29,8 @@ const ImageEditor = () => {
 
             setImageDom(image)
 
-            fetch(image.src).then(res => res.blob()).then(blob => {
-                processImage(blob, image, setCropProps)
+            fetch(image.src).then(res => res.blob()).then(imageBytes => {
+                processImage(imageBytes, image, setCropProps)
             })
         }
     }, [imageSrc])

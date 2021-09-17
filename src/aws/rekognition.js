@@ -30,7 +30,7 @@ const detectFaces = async (imageBytes, imageDom) => {
     }
   };
 
-  const processImage = async (image, imageDom, setFaceLocation) => {
+  const processImage = async (imageBytes, imageDom, setFaceLocation) => {
     // Load base64 encoded image.
     let reader = new FileReader();
     reader.onload = (function (theFile) {
@@ -61,8 +61,8 @@ const detectFaces = async (imageBytes, imageDom) => {
         detectFaces(ua, imageDom)
         .then(faceLocation => setFaceLocation(faceLocation));
       };
-    })(image);
-    reader.readAsDataURL(image);
+    })(imageBytes);
+    reader.readAsDataURL(imageBytes);
   };
 
   export { processImage }

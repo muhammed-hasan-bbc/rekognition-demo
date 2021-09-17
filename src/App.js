@@ -1,6 +1,6 @@
 import "./App.css";
 import 'react-image-crop/dist/ReactCrop.css';
-import ImageEditor from "./components/molecules/ImageEditor";
+import ImageEditor from "./components/organisms/ImageEditor";
 
 function App() {
   return (
