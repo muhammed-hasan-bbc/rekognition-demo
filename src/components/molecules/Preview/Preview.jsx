@@ -13,9 +13,6 @@ const Preview = ({ imageDom, cropProps, stylingFilterString, previewCanvasRef , 
 
       const pixelRatio = window.devicePixelRatio;
 
-      // cropCanvas.width = newCrop.width * pixelRatio;
-      // cropCanvas.height = newCrop.height * pixelRatio;
-
       cropCanvas.width = width * pixelRatio
       cropCanvas.height = height * pixelRatio
 
