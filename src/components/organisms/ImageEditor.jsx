@@ -36,7 +36,7 @@ const ImageEditor = () => {
     }, [imageSrc])
 
     const renderCrop = () => {
-        return <div className="Original" style={{width: "40vw", height: "20vh"}}>
+        return <div className="Original" style={{width: "100%", height: "80%"}}>
             <ReactCrop
                 ruleOfThirds={true}
                 onChange={crop => {

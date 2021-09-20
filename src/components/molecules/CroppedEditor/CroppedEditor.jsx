@@ -41,7 +41,8 @@ const CroppedEditor = ({imageDom, cropProps, filename, filetype}) => {
         if (previewRefsAreDefined()) {
             let downloadLink = cropPreviewRef.current.toDataURL(filetype);
             return <>
-                <FilterControls 
+                <FilterControls
+                    imageDom={imageDom} 
                     setStylingFilterString={setStylingFilterString}
                     currentImageBrightness={imageBrightnessIndex}/>
 
